@@ -20,7 +20,7 @@ for (let menupath of Object.values(togglechecks)) {
 
 module.exports = {
 
-	set: function(key, value, debug_missing_handlers = false) {
+	set: function(key, value) {
 
 		config[key] = value;
 
