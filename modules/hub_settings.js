@@ -2,7 +2,9 @@
 
 const {ipcRenderer} = require("electron");
 
-const multichecks = {};
+const multichecks = {
+	bar:		["App", "Bar"],
+};
 
 const togglechecks = {
 	foo:		["App", "Foo"],
