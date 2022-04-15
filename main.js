@@ -81,7 +81,7 @@ function startup() {
 	});
 
 	electron.ipcMain.on("alert", (event, msg) => {
-		alert(msg);
+		alert(win, msg);
 	});
 
 	electron.ipcMain.on("set_checks", (event, msg) => {
@@ -127,7 +127,7 @@ function menu_build() {
 				{
 					label: "About",
 					click: () => {
-						alert(`${electron.app.getName()} (${electron.app.getVersion()}) in Electron (${process.versions.electron})`);
+						alert(win, `${electron.app.getName()} (${electron.app.getVersion()}) in Electron (${process.versions.electron})`);
 					}
 				},
 				{
@@ -255,6 +255,6 @@ function verify_menupath(menupath) {
 	try {
 		get_submenu_items(menupath);
 	} catch (err) {
-		alert(`Failed to verify menupath: ${stringify(menupath)}`);
+		alert(win, `Failed to verify menupath: ${stringify(menupath)}`);
 	}
 }
