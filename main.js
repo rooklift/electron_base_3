@@ -108,7 +108,6 @@ function startup() {
 
 	let query = {};
 	query.user_data_path = electron.app.getPath("userData");
-	query.zoomfactor = desired_zoomfactor;
 
 	win.loadFile(
 		path.join(__dirname, "renderer.html"),
