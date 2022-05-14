@@ -13,10 +13,6 @@ let menu_is_set = false;
 let win;											// Need to keep global references to every window we make. (Is that still true?)
 
 electron.app.whenReady().then(() => {
-	startup();
-});
-
-function startup() {
 
 	let desired_zoomfactor = 1 / electron.screen.getPrimaryDisplay().scaleFactor;
 
@@ -113,7 +109,7 @@ function startup() {
 		path.join(__dirname, "renderer.html"),
 		{query: query}
 	);
-}
+});
 
 // --------------------------------------------------------------------------------------------------------------
 
