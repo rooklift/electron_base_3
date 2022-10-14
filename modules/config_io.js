@@ -42,7 +42,11 @@ exports.load = () => {
 
 	try {
 		if (fs.existsSync(exports.filepath)) {
-			Object.assign(config, JSON.parse(fs.readFileSync(exports.filepath, "UTF-8")));
+			let raw_read = fs.readFileSync(exports.filepath, "UTF-8");
+			if (raw_read.length < 100 && raw_read.trim() === "") {
+				raw_read = "{}";
+			}
+			Object.assign(config, JSON.parse(raw_read));
 		}
 		errortext = "";
 	} catch (err) {
