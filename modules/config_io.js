@@ -8,8 +8,6 @@ const path = require("path");
 
 exports.filename = "config.json";
 
-// To avoid using "remote", we rely on the main process passing userData location in the query...
-
 if (!global.user_data_path) {
 	throw new Error("config_io: global.user_data_path not set!");
 }
