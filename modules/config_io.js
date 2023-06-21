@@ -8,13 +8,17 @@ const path = require("path");
 
 exports.filename = "config.json";
 
-if (!global.user_data_path) {
+// ---------------------------------------------------------------------------------------------------------------------------
+
+let in_main_process = electron.app ? true : false;
+
+if (!in_main_process && !global.user_data_path) {
 	throw new Error("config_io: global.user_data_path not set!");
 }
 
-exports.filepath = electron.app ?
-		path.join(electron.app.getPath("userData"), exports.filename) :			// in Main process
-		path.join(global.user_data_path, exports.filename);						// in Renderer process
+exports.filepath = in_main_process ?
+		path.join(electron.app.getPath("userData"), exports.filename) :
+		path.join(global.user_data_path, exports.filename);
 
 // ---------------------------------------------------------------------------------------------------------------------------
 
