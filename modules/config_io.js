@@ -1,6 +1,7 @@
 "use strict";
 
 // Remember this will run twice in 2 different processes, so don't autosave etc.
+// Remember that global.user_data_path must be set in the Renderer before requiring this.
 
 const electron = require("electron");
 const fs = require("fs");
