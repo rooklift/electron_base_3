@@ -1,7 +1,6 @@
 "use strict";
 
 // Remember this will run twice in 2 different processes, so don't autosave etc.
-// Remember that global.user_data_path must be set in the Renderer before requiring this.
 
 const electron = require("electron");
 const fs = require("fs");
@@ -10,6 +9,10 @@ const path = require("path");
 exports.filename = "config.json";
 
 // To avoid using "remote", we rely on the main process passing userData location in the query...
+
+if (!global.user_data_path) {
+	throw new Error("config_io: global.user_data_path not set!");
+}
 
 exports.filepath = electron.app ?
 		path.join(electron.app.getPath("userData"), exports.filename) :			// in Main process
