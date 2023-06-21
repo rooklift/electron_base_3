@@ -12,10 +12,10 @@
 
 			config.width = window.innerWidth;
 			config.height = window.innerHeight;
-			
+
 		}
 	}
 
 	setTimeout(window_resize_spinner, 127);
-	
+
 })();

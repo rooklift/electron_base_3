@@ -5,14 +5,15 @@ const path = require("path");
 const alert = require("./modules/alert_main");
 const stringify = require("./modules/stringify");
 
-const config_io = require("./modules/config_io");					// Creates global.config
-config_io.load();													// Populates global.config
+const config_io = require("./modules/config_io");		// Creates global.config
+config_io.load();										// Populates global.config
 
 let menu = menu_build();
 let menu_is_set = false;
+let have_received_ready = false;
 let have_sent_quit = false;
 let have_received_terminate = false;
-let win;											// Need to keep global references to every window we make. (Is that still true?)
+let win;												// Need to keep global references to every window we make. (Is that still true?)
 
 electron.app.whenReady().then(() => {
 
@@ -30,24 +31,8 @@ electron.app.whenReady().then(() => {
 			contextIsolation: false,
 			nodeIntegration: true,
 			spellcheck: false,
-			zoomFactor: desired_zoomfactor			// Unreliable? See https://github.com/electron/electron/issues/10572
+			zoomFactor: desired_zoomfactor				// Unreliable? See https://github.com/electron/electron/issues/10572
 		}
-	});
-
-	win.once("ready-to-show", () => {
-
-		try {
-			win.webContents.setZoomFactor(desired_zoomfactor);	// This seems to work, note issue 10572 above.
-		} catch (err) {
-			win.webContents.zoomFactor = desired_zoomfactor;	// The method above "will be removed" in future.
-		}
-
-		if (config.maxed) {
-			win.maximize();
-		}
-
-		win.show();
-		win.focus();
 	});
 
 	win.on("maximize", (event) => {
@@ -91,9 +76,38 @@ electron.app.whenReady().then(() => {
 		electron.app.quit();
 	});
 
+	electron.ipcMain.once("renderer_started", () => {
+		win.webContents.send("renderer_globals", {
+			user_data_path: electron.app.getPath("userData")
+		});
+	});
+
 	electron.ipcMain.once("renderer_ready", () => {
+		have_received_ready = true;
+		try {
+			win.webContents.setZoomFactor(desired_zoomfactor);		// This seems to work, note issue 10572 above.
+		} catch (err) {
+			win.webContents.zoomFactor = desired_zoomfactor;		// The method above "will be removed" in future.
+		}
+
+		if (config.maxed) {
+			win.maximize();
+		}
+
+		win.show();
+		win.focus();
+
 		// This is the place to load any files given on command line.
 	});
+
+	if (path.basename(process.argv[0]) === "electron.exe") {		// i.e. it's not in production but in dev...
+		setTimeout(() => {
+			if (!have_received_ready) {								// We never received renderer_ready, so probably a syntax error in renderer source.
+				win.show();
+				win.focus();
+			}
+		}, 1000);
+	}
 
 	electron.ipcMain.on("alert", (event, msg) => {
 		alert(win, msg);
@@ -119,15 +133,8 @@ electron.app.whenReady().then(() => {
 	menu_is_set = true;
 
 	// Actually load the page last, I guess, so the event handlers above are already set up.
-	// Send some possibly useful info as a query.
 
-	let query = {};
-	query.user_data_path = electron.app.getPath("userData");
-
-	win.loadFile(
-		path.join(__dirname, "renderer.html"),
-		{query: query}
-	);
+	win.loadFile(path.join(__dirname, "renderer.html"));
 });
 
 // --------------------------------------------------------------------------------------------------------------

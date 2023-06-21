@@ -3,20 +3,33 @@
 const {ipcRenderer} = require("electron");
 const stringify = require("./stringify");
 
-const config_io = require("./config_io");		// Creates global.config
-config_io.load();								// Populates global.config
+ipcRenderer.on("renderer_globals", (event, o) => {
+	for (let [key, value] of Object.entries(o)) {
+		global[key] = value;
+		console.log(`${key}: ${value}`);
+	}
+	startup();
+});
 
-global.alert = (msg) => {
-	ipcRenderer.send("alert", stringify(msg));
-};
+ipcRenderer.send("renderer_started", null);			// Causes main to send us the renderer_globals message
 
-global.hub = require("./hub");
+function startup() {
 
-require("./__start_handlers");
-require("./__start_spinners");
+	const config_io = require("./config_io");		// Creates global.config
+	config_io.load();								// Populates global.config
 
-if (config_io.error()) {
-	alert("Config file failed to load. It will not be written to. You should fix this.");
+	global.alert = (msg) => {
+		ipcRenderer.send("alert", stringify(msg));
+	};
+
+	global.hub = require("./hub");
+
+	require("./__start_handlers");
+	require("./__start_spinners");
+
+	if (config_io.error()) {
+		alert("Config file failed to load. It will not be written to. You should fix this.");
+	}
+
+	ipcRenderer.send("renderer_ready", null);
 }
-
-ipcRenderer.send("renderer_ready", null);
