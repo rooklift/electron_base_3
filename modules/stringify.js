@@ -24,7 +24,7 @@ module.exports = (msg) => {
 		try {
 			str = Object.prototype.toString.call(msg);			// String() threw (e.g. circular null-proto object), or instanceof trapped (proxy)
 		} catch {
-			str = "[unstringifiable " + typeof msg + "]";		// hostile/revoked proxies
+			str = "[unstringifiable " + typeof msg + "]";		// hostile / revoked proxies
 		}
 	}
 	return str.trim();
