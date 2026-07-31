@@ -24,11 +24,12 @@ ipcRenderer.on("call", (event, msg) => {
 	let fn;
 	if (typeof msg === "string") {																		// msg is function name
 		fn = hub[msg].bind(hub);
+		fn();
 	} else if (typeof msg === "object" && typeof msg.fn === "string" && Array.isArray(msg.args)) {		// msg is object with fn and args
 		fn = hub[msg.fn].bind(hub, ...msg.args);
+		fn();
 	} else {
 		console.log("Bad call, msg was...");
 		console.log(msg);
 	}
-	fn();
 });
